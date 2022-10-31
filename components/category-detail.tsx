@@ -19,7 +19,6 @@ const CategoryDetail = ({ categoryId }: PropsCategoryDetail) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [query, setQuery] = useState<string>('')
 
-  // TODO: Check if this useEffect is an anti-pattern
   useEffect(() => {
     if (!categoryId) return
 
