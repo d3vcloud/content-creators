@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { Category, Creator } from 'types'
 
@@ -12,10 +12,13 @@ type PropsCategoryDetail = {
 }
 
 const CategoryDetail = ({ categoryId, data }: PropsCategoryDetail) => {
-  console.log(data)
-  const [creators, setCreators] = useState<Creator[]>(data)
+  const [creators, setCreators] = useState<Creator[]>([])
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [query, setQuery] = useState<string>('')
+
+  useEffect(() => {
+    setCreators(data)
+  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
