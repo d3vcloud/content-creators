@@ -1,10 +1,12 @@
+import { useEffect, useState } from 'react'
 import { GetStaticPaths } from 'next'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 
-import { Category } from 'types'
-import { LIST_CATEGORIES } from 'data/categories'
 import { api } from 'data/api'
+import { LIST_CATEGORIES } from 'data/categories'
+
+import { Category, Creator } from 'types'
 
 import HeaderTitle from 'components/header-title'
 import Layout from 'components/layout'
@@ -12,11 +14,35 @@ import { HomeIc } from 'components/icons'
 import CustomLink from 'components/custom-link'
 import ListCategory from 'components/list-category'
 import CategoryDetail from 'components/category-detail'
+import Placeholder from 'components/placeholder'
 
 const DashboardCategory = ({ data }: any) => {
+  const [creators, setCreators] = useState<Creator[]>(data)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const router = useRouter()
-  const { id } = router.query
+  const { id, q } = router.query
   const title = id ? `Dashboard: ${id} 🚀` : 'Loading...'
+
+  useEffect(() => {
+    if (!q) return
+
+    const getData = async () => {
+      const data = await api.search(id as string, q as string)
+      console.log(data)
+      setCreators(data)
+      setIsLoading(false)
+    }
+    getData()
+  }, [q]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!q) {
+      console.log('Fetching all data')
+      setCreators(data)
+      setIsLoading(false)
+    }
+  }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <>
       <Head>
@@ -32,7 +58,11 @@ const DashboardCategory = ({ data }: any) => {
         <div className='flex flex-col gap-4'>
           {/* Tecnologías slider */}
           <ListCategory listCategories={LIST_CATEGORIES} />
-          <CategoryDetail categoryId={id as Category} data={data} />
+          {isLoading ? (
+            <Placeholder length={4} />
+          ) : (
+            <CategoryDetail categoryId={id as Category} data={creators} />
+          )}
         </div>
       </Layout>
     </>

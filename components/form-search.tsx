@@ -2,36 +2,40 @@ import { ChangeEvent, Dispatch, SetStateAction, useState, useCallback } from 're
 import { useRouter } from 'next/router'
 import debounce from 'just-debounce-it'
 
-import type { Creator } from 'types'
-import { api } from 'data/api'
 import { LoadingIc, SearchIc } from './icons'
 
 type SearchProps = {
   nameClass?: string
-  setCreators: Dispatch<SetStateAction<Creator[]>>
   setIsSearching: Dispatch<SetStateAction<boolean>>
   setQuery: Dispatch<SetStateAction<string>>
 }
 
-const FormSearch = ({ nameClass, setCreators, setIsSearching, setQuery }: SearchProps) => {
+const FormSearch = ({ nameClass, setIsSearching, setQuery }: SearchProps) => {
   const router = useRouter()
   const { id: categoryId } = router.query
 
   const [isTyping, setIsTyping] = useState<boolean>(false)
 
   const autoCompleteDebounce = useCallback(
-    debounce(async (query: string) => {
-      const data = await api.search(categoryId as string, query)
-      setCreators(data)
+    debounce((query: string) => {
       setIsTyping(false)
       setQuery(query)
+      router.push({
+        pathname: `/category/${categoryId}`,
+        query: { q: query }
+      })
     }, 250),
-    []
+    [categoryId]
   )
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     const query = e.target.value
+    if (!query) {
+      router.push({ pathname: `/category/${categoryId}` })
+      return
+    }
+
     setIsTyping(true)
     // it's an indicator that tells app whether users is searching or not
     setIsSearching(true)

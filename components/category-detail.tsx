@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import type { Category, Creator } from 'types'
 
@@ -12,26 +12,16 @@ type PropsCategoryDetail = {
 }
 
 const CategoryDetail = ({ categoryId, data }: PropsCategoryDetail) => {
-  const [creators, setCreators] = useState<Creator[]>([])
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [query, setQuery] = useState<string>('')
 
-  useEffect(() => {
-    setCreators(data)
-  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <>
-      {(creators.length > 0 || isSearching) && (
-        <FormSearch
-          nameClass='mb-8'
-          setCreators={setCreators}
-          setIsSearching={setIsSearching}
-          setQuery={setQuery}
-        />
+      {(data.length > 0 || isSearching) && (
+        <FormSearch nameClass='mb-8' setIsSearching={setIsSearching} setQuery={setQuery} />
       )}
-      {creators.length > 0 ? (
-        <ListCreator listCreators={creators} />
+      {data.length > 0 ? (
+        <ListCreator listCreators={data} />
       ) : (
         <NoDataFound
           message='No se encontraron resultados para'
